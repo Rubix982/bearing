@@ -190,7 +190,7 @@ checked; the rest are there to be read. A sample:
 ## What it found, first run
 
 On `edit-slice`, three of eight uncomfortable — including the summary being 32 commits
-stale and eleven of sixteen sections named after runs rather than claims. On `a second, private project`,
+stale and eleven of sixteen sections named after runs rather than claims. On a second, private project,
 four of eight, with a different set.
 
 **Three bugs were found by running it on a real project after the constructed tests
@@ -200,7 +200,7 @@ passed**, which is the argument for doing both:
   38 of edit-slice's 67 answered threads were counted unanswered.
 - claim debt counted a cited open *question* as debt, flagging the nine threads in the
   section whose job is listing open threads.
-- `still_checking` knew only edit-slice's vocabulary and read a second, private project's critique ledger —
+- `still_checking` knew only edit-slice's vocabulary and read the second project's correction ledger —
   a document that is **entirely** corrections — as evidence nobody was checking.
 
 Each is now a test with both branches. **A check written in one project's dialect will
@@ -208,6 +208,6 @@ libel every project that speaks another.**
 
 ## Scope, stated honestly
 
-Derived from **two** projects — `edit-slice` (research) and `a second, private project` (production pipeline).
+Derived from **two** projects — `edit-slice` (research) and a second, private project (production pipeline).
 Two is enough to tell a general rule from a local accident perhaps half the time. Where a
 check is a keyword heuristic it says so and prints its evidence, so disagreeing is cheap.
