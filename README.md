@@ -4,9 +4,14 @@ A bearing is a measured direction, not a destination. This tells a research proj
 it is pointed. It does not claim to know where it should go.
 
 ```bash
-python -m bearing ~/code/open-concept-lab/ai/edit-slice
-python -m bearing <private-project> --json
+pip install -e .          # once; gives you the `bearing` command anywhere
+bearing ~/code/open-concept-lab/ai/edit-slice
+bearing <private-project> --json
 ```
+
+Or without installing, from this directory: `python -m bearing <project>`. Stdlib
+only — there is nothing to resolve, and a navigator that cannot run because of its
+own dependency tree would be a joke at its own expense.
 
 ## Why
 

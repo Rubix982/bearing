@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bearing"
+version = "0.1.0"
+description = "A measured direction for a research project — drift, not taste"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []          # stdlib only, deliberately: see README
+
+[project.scripts]
+bearing = "bearing.__main__:main"
+
+[tool.setuptools]
+packages = ["bearing"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
