@@ -243,7 +243,10 @@ def priced_and_unrun(r: Record) -> dict:
 #: ENTIRELY a record of corrections, as evidence that nobody was checking. A check written
 #: in one project's dialect will libel every project that speaks another.
 CORRECTION = (r"withdraw|retract|was wrong|corrected|superseded|reversed|"
-              r"\bfixed\b|\bRCA\b|re-?opened|does not survive|did not hold")
+              r"\bfixed\b|\bRCA\b|re-?opened|does not survive|did not hold|"
+              # a third dialect: a product's decision log says what the FIRST version did
+              # and what it does now, without the word "wrong" (sheets, 2026-10-30)
+              r"\bthe first (?:build|version|cut)\b|\bit used to\b")
 
 
 def still_checking(r: Record) -> dict:

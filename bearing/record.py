@@ -166,6 +166,87 @@ def pipeline(root: str) -> Record:
 ADAPTERS["pipeline"] = pipeline
 
 
+def moments(root: str) -> Record:
+    """A product designed one moment of its users' week at a time — written against `sheets`.
+
+    The third shape. No tickets and no threads (a side build switches them off), but the
+    same four things are on disk:
+
+        work       docs/moments/NN-*.md    one design per moment; its `_Status:` line
+                   docs/use-cases.md       numbered stories marked ✓ built, ◐ partly, — not yet
+        questions  "## Questions for …" in each moment, and in use-cases.md. A question
+                   is answered when its line carries `→ the answer`.
+        results    "## Decisions" in each moment: `- **2026-10-30 · Title.** why`
+        claims     README.md
+
+    A status word is translated, not trusted: "built" is done, "defined" is open, and a
+    story's mark is its status. ◐ is open on purpose — partly built is not built.
+    """
+    j = lambda *p: os.path.join(root, *p)  # noqa: E731
+    work: list[Item] = []
+    questions: list[Item] = []
+    results: list[Item] = []
+
+    def asked(src: str, prefix: str) -> None:
+        for sec in re.finditer(r"^## (?:Open )?[Qq]uestions\b.*?$(.*?)(?=^## |\Z)", src, re.M | re.S):
+            for m in re.finditer(r"^(\d+)\. (.+)$", sec.group(1), re.M):
+                line = m.group(2)
+                q, _, ans = line.partition("→")
+                questions.append(Item(f"{prefix}Q{m.group(1)}", q.strip(), line,
+                                      "answered" if ans.strip() else "open", "question"))
+
+    mdir = j("docs/moments")
+    for name in sorted(os.listdir(mdir)) if os.path.isdir(mdir) else []:
+        m = re.match(r"(\d+)-.*\.md$", name)
+        if not m:
+            continue
+        src = _read(os.path.join(mdir, name))
+        mid = f"M-{m.group(1)}"
+        title = (re.search(r"^# (.+)$", src, re.M) or [0, name])[1].strip()
+        st = (re.search(r"^_Status:\s*([^._]+)", src, re.M) or [0, ""])[1].strip()
+        date = (re.search(r"\d{4}-\d{2}-\d{2}", st) or [""])[0]
+        word = st.split()[0].lower() if st else ""
+        status = {"built": "done", "shipped": "done", "blocked": "blocked"}.get(word, "open")
+        work.append(Item(mid, title, src, f"{status} ({st})" if st else status, "moment", date))
+        asked(src, f"{mid}-")
+        for d in re.finditer(r"^- \*\*(\d{4}-\d{2}-\d{2}) · (.+?)\*\*(.*?)(?=^- \*\*|^## |\Z)",
+                             src, re.M | re.S):
+            results.append(Item(f"{mid}-D{len(results) + 1}", d.group(2).strip(" ."),
+                                d.group(3).strip(), "decided", "decision", d.group(1)))
+
+    # Stories carry no dates, and checks read `work` as oldest-first. Numbered stories are a
+    # catalogue, not a sequence; putting them after the moments made the first run read
+    # stories 18-28 as "the last five things finished". They go first; dated moments last.
+    uc = _read(j("docs/use-cases.md"))
+    stories = []
+    for m in re.finditer(r"^(\d+)\. (.+?)\s+(✓|◐|—)(.*)$", uc, re.M):
+        mark = {"✓": "done", "◐": "open (partly built)", "—": "open"}[m.group(3)]
+        stories.append(Item(f"S-{int(m.group(1)):02d}", m.group(2).strip(), m.group(0), mark, "story"))
+    work = stories + sorted(work, key=lambda w: (w.created, w.id))
+    asked(uc, "UC-")
+
+    # Findings from walking the flows (docs/flow-audit.md): open ones are work still owed.
+    work += _sections(_read(j("docs/flow-audit.md")), r"^### (U-\d+) · (.+?)$(.*?)(?=^### |^## |\Z)", "finding")
+    for q in questions_from_answers(_read(j("docs/answers-round-1.md"))):
+        questions.append(q)
+
+    claims = _read(j("README.md"))
+    return Record(root, work, questions, results, claims, j("README.md") if claims else "")
+
+
+def questions_from_answers(src: str) -> list[Item]:
+    """Follow-up questions raised by an answer round: "## New questions this raises", numbered."""
+    out = []
+    for sec in re.finditer(r"^## New questions.*?$(.*?)(?=^## |\Z)", src, re.M | re.S):
+        for m in re.finditer(r"^(\d+)\. (.+)$", sec.group(1), re.M):
+            q, _, ans = m.group(2).partition("→")
+            out.append(Item(f"A1-Q{m.group(1)}", q.strip(), m.group(2), "answered" if ans.strip() else "open", "question"))
+    return out
+
+
+ADAPTERS["moments"] = moments
+
+
 def load_config(root: str) -> dict:
     """`.bearing.json` beside the project: {"adapter": ..., "claims": "relative/path"}.
 

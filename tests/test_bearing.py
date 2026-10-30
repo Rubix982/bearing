@@ -455,3 +455,59 @@ def test_systems_uses_the_case_ratio_not_a_single_mention(tmp_path):
     service = rec(root=root, work=[item(
         "E-2", "NDIF queued it. NDIF ran it. NDIF returned it. We budgeted ndif time.")])
     assert "ndif" in checks._systems(service)
+
+
+def test_moments_adapter_reads_the_sheets_layout(tmp_path):
+    """The record a moment-by-moment product keeps: designs, stories, questions, decisions."""
+    from bearing.record import moments
+    (tmp_path / "docs" / "moments").mkdir(parents=True)
+    (tmp_path / "docs" / "moments" / "01-contractors.md").write_text(
+        "# Moment 1: Contractors update\n\n_Status: built 2026-10-30 on the defaults._\n\n"
+        "## Decisions\n\n- **2026-10-30 · Checking is explicit.** Editing one field is not a check.\n\n"
+        "## Questions for the scheduler\n\n1. Who fills it in? → Contractors\n2. Who reports to whom?\n")
+    (tmp_path / "docs" / "moments" / "02-p6.md").write_text("# Moment 2: P6\n\n_Status: defined 2026-10-31._\n")
+    (tmp_path / "docs" / "use-cases.md").write_text(
+        "2. Each subcontractor updates their rows. ✓ Check-in.\n14. Phone updates. ◐ Cramped.\n"
+        "15. By location. —\n\n## Open questions for the scheduler\n\n- not numbered, ignored\n1. Lead time? → 3 to 4 weeks\n")
+    (tmp_path / "README.md").write_text("# x\n")
+    r = moments(str(tmp_path))
+    by = {w.id: w for w in r.work}
+    assert by["M-01"].done and not by["M-02"].done
+    assert by["M-01"].created == "2026-10-30"
+    assert by["S-02"].done and not by["S-14"].done and not by["S-15"].done  # partly is not done
+    qs = {q.id: q for q in r.questions}
+    assert qs["M-01-Q1"].done and not qs["M-01-Q2"].done and qs["UC-Q1"].done
+    assert [d.title for d in r.results] == ["Checking is explicit"]
+    assert r.ok() and r.claims_path.endswith("README.md")
+
+
+def test_moments_adapter_on_an_empty_project(tmp_path):
+    from bearing.record import moments
+    assert not moments(str(tmp_path)).ok()
+
+
+def test_still_checking_reads_a_decision_log_dialect():
+    """sheets records corrections as 'The first build counted any edit…' and 'It used to
+    take the first tab…'. The check read eight such decisions as no correction at all."""
+    decisions = [item(f"M-01-D{n}", f"Ordinary decision {n}.", status="decided") for n in range(7)]
+    decisions.append(item("M-01-D8", "Checking is explicit. The first build counted any edit.", status="decided"))
+    assert not checks.still_checking(rec(results=decisions))["bad"]
+    decisions[-1] = item("M-00-D3", "Import picks the best tab. It used to take the first one.", status="decided")
+    assert not checks.still_checking(rec(results=decisions))["bad"]
+    plain = [item(f"D{n}", f"Ordinary decision {n}.", status="decided") for n in range(8)]
+    assert checks.still_checking(rec(results=plain))["bad"]
+
+
+def test_moments_adapter_reads_flow_audit_findings(tmp_path):
+    """Findings from walking the flows are work: fixed ones done, open ones owed."""
+    from bearing.record import moments
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "flow-audit.md").write_text(
+        "# Flow audit\n\n## Findings\n\n### U-01 · Default view hides half the plan\n\n**Status:** fixed\n**Found by:** F11\n\n"
+        "### U-02 · Prime locked out\n\n**Status:** open\n")
+    (tmp_path / "docs" / "answers-round-1.md").write_text("# x\n\n## New questions this raises\n\n1. Is P6 on a server? \n2. Who fixes a returned update? → The subcontractor\n")
+    r = moments(str(tmp_path))
+    by = {w.id: w for w in r.work}
+    assert by["U-01"].done and not by["U-02"].done and by["U-01"].kind == "finding"
+    qs = {q.id: q for q in r.questions}
+    assert not qs["A1-Q1"].done and qs["A1-Q2"].done
