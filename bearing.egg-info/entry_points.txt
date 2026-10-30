@@ -1,0 +1,2 @@
+[console_scripts]
+bearing = bearing.__main__:main

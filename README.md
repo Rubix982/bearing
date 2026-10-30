@@ -239,3 +239,9 @@ libel every project that speaks another.**
 Derived from **two** projects — `edit-slice` (research) and a second, private project (production pipeline).
 Two is enough to tell a general rule from a local accident perhaps half the time. Where a
 check is a keyword heuristic it says so and prints its evidence, so disagreeing is cheap.
+
+## License
+
+MIT. Use it, fork it, rewrite the checks for your own project's dialect -- the last
+one is the point, since a check written in one project's dialect will libel every
+project that speaks another.

@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+bearing/__init__.py
+bearing/__main__.py
+bearing/brief.py
+bearing/checks.py
+bearing/lessons.py
+bearing/outcomes.py
+bearing/record.py
+bearing/sentinel.py
+bearing.egg-info/PKG-INFO
+bearing.egg-info/SOURCES.txt
+bearing.egg-info/dependency_links.txt
+bearing.egg-info/entry_points.txt
+bearing.egg-info/top_level.txt
+tests/test_bearing.py
