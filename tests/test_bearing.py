@@ -521,3 +521,44 @@ def test_named_and_left_both_ways():
     assert not _named_and_left((now - 9 * 3600, "fix the fold measure"), now)["bad"]  # nothing named
     assert not _named_and_left(None, now)["bad"]
     assert _named_and_left((now - 4 * 3600, "hcf2 / hcfm2 rerunning"), now)["detail"]["named"]
+
+
+# Janaan's commit subjects of 2026-11-05, oldest first (the historical case same_fix_again comes from).
+_JANAAN_1105 = [
+    "ST-140: opt-in --floor-front (the bell's reach toward the camera from the photo's lowest rows through the camera); hcfm4 / hcf4 queued",
+    "ST-140: --cut-mid held on mariab (knee slivers gone, cut 0.779 m); --floor-front missed its predictions and adds tiers / a wedge; sheet ep18",
+    "ST-140: --floor-front v2: each point down its own direction's arc (v1 spent the front's arc everywhere: 15365's hem short of the rim all round, the sides' turned hem lost); predictions for hcf5",
+    "ST-140: --floor-front v2 on 15365: cast gap 8.4 cm, IoU 0.658, tiers gone; a shelf at the bell's front; sheet ep18b",
+    "ST-140: --floor-front v3 (the bell's top raised with its reach, no flatter than 1 in 1); predictions for hcf6",
+    "ST-140: noise check on 15365: drape seeds 0.101 / 0.094 (inside 0.02); Marigold's own seeds spread 0.03; differences under 0.03 not results",
+    "ST-140: --floor-front v3 failed: the shelf is not the bell's slope; outline as v2; stopped pending a section through the shape; sheet ep18c",
+    "photofit: the debug dump on JANAAN_PF_DEBUG, with out_floor, lay and newz",
+    "ST-140: opt-in --floor-free (the hem free under the bell's top, self-collision on there) and the crossing count on every photo-fit (the user: cloth falls and spreads; no cloth crosses cloth); predictions for hcf7",
+]
+
+
+def test_same_fix_again_on_the_floor_front_record():
+    from bearing.checks import _same_fix_again
+    upto = lambda n: list(reversed(_JANAAN_1105[:n]))   # noqa: E731  (newest first, as git log gives)
+    assert not _same_fix_again(upto(4))["bad"]          # v2: under the line
+    d = _same_fix_again(upto(5))                         # v3 written
+    assert d["bad"] and d["detail"]["name"] == "--floor-front" and d["detail"]["version"] == 3
+    assert _same_fix_again(upto(7))["bad"]              # "stopped pending a section" is a pause inside the frame
+    assert not _same_fix_again(upto(9))["bad"]          # the author's reframe recorded
+    assert not _same_fix_again([])["bad"]
+
+
+def test_laws_both_ways():
+    from bearing.checks import _laws
+    assert _laws(None)["bad"]
+    assert _laws("# Laws\nnothing here")["bad"]
+    one = "## L-1 · Simulate, don't draw\nwhy\n**Checked by:** crossings in photofit.json\n"
+    assert not _laws(one)["bad"]
+    blind = one + "## L-2 · No cloth crosses cloth\nwhy\n**Checked by:** —\n"
+    d = _laws(blind)
+    assert d["bad"] and d["detail"]["unchecked"] == ["L-2"]
+    assert _laws("## L-1 · A law\nno check line at all\n")["bad"]
+    # (the admission that opens with a refusal is not a check, however much text follows it)
+    yet = one + "## L-2 · Another\n**Checked by:** not yet. The held points are countable, but nothing fails a run.\n"
+    assert _laws(yet)["detail"]["unchecked"] == ["L-2"]
+    assert _laws(one + "## L-3 · A discipline\n**Checked by:** none (read before a stage is written).\n")["detail"]["unchecked"] == ["L-3"]

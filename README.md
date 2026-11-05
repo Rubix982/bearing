@@ -171,6 +171,48 @@ silent on the same record once the reproducer and the source reading are in it.
 `item()`'s third positional, which is `status`, not `body`. That branch had never been
 exercised.
 
+## The loop and the pause
+
+A loop is a loop. An agent running a project runs one, and so does the person it works for:
+do the step, measure, take the next step. What the person does that the loop does not is stop
+inside it and think from other angles. `same_fix_again`, `no_laws` and the brief's section 6
+exist to schedule that stop.
+
+The incident they come from, Janaan on 2026-11-05. The agent ran a disciplined loop on one
+defect: a prediction written before each run, a measurement after, an honest failure recorded.
+`--floor-front` went v1 → v2 → v3, and every version was a better way to *draw* the hem of a
+garment. Then the author wrote one sentence: *"when a cloth is longer than the person, it falls
+onto the floor."* The hem was being drawn and pinned in place, never simulated. Three versions
+of discipline could not have found that, because
+
+> **a loop checks whether a step worked, never whether it was the right kind of step.**
+
+The project's process rules (predictions, review sheets, a ledger) caught every false claim
+that day. None could see that the pipeline broke two laws nobody had written down. So:
+
+| | the bad answer, computable |
+| --- | --- |
+| `same_fix_again` | a fix has reached its third version and no commit since has questioned its frame |
+| `no_laws` | the project has no `LAWS.md`, or a law in it names nothing that checks it |
+
+**Laws, not steps.** A `LAWS.md` at the project root, one `## L-n · ...` section per law: what
+the work must never do, the incident it came from, and `**Checked by:**` what enforces it. An
+engine tutorial that builds a game in a few episodes works because its author states those laws
+first (*we will need this, this is where it breaks*), and an agent works the same way: given the
+laws, it can run long; without them, it runs long in whatever frame it started in. A check line
+that opens with *not yet* or *none* counts as unchecked, however much honest text follows it.
+
+**The pause asks; it never answers.** Section 6 of the brief lists the angles (the expert's map
+of the nearest solved problem, the cause upstream of the symptom, the assumption that would
+waste everything, the laws, what the picture shows that no number says) and leads with whichever
+check fired. It does not say which angle is right. That would be taste, and the boundary above
+holds here most of all.
+
+**Both tested against the record they came from.** `same_fix_again` fires on Janaan's commit
+subjects at `--floor-front v3`, stays firing through *"stopped pending a section through the
+shape"* (a pause still measuring inside the frame), and goes quiet at the commit that records
+the author's reframe. A frame question is deliberately narrow; a pause is not a reframe.
+
 ## Track record
 
 ```bash

@@ -592,6 +592,103 @@ def named_and_left(r: Record) -> dict:
 
 CHECKS.append(named_and_left)
 
+# ------------------------------------------------------------------ the pause in the loop
+# (2026-11-05, Janaan) A loop checks whether a step worked; it cannot check whether the step was the right
+# KIND of step. --floor-front went v1 -> v2 -> v3, each predicted, measured and honestly failed, all inside
+# one frame (draw the hem better). The author's one sentence -- "when a cloth is longer than the person, it
+# falls onto the floor" -- replaced the frame. These two checks schedule the pause the loop does not take.
+
+VERSIONED = r"(--?[a-z][\w-]*[a-z]|\b[A-Za-z][\w-]*[A-Za-z])\s+v(\d+)\b"
+#: A commit that questions the frame rather than the step. Deliberately narrow: "stopped pending a section
+#: through the shape" (ebc1b62) is a pause still measuring inside the frame, and must not count.
+FRAME = (r"\bframe\b|step(?:ped)? back|\blaws?\b|\bexpert|\bupstream\b|\bat all\b|"
+         r"\bthe user\b|\bthe author\b|\breframe|\bwrong (?:approach|question)")
+SAME_FIX_N = 3
+
+
+def _same_fix_again(msgs: list[str], n: int = SAME_FIX_N) -> dict:
+    """`msgs` newest first. The newest name whose versions reached `n`, when no frame-questioning
+    commit is newer than that version's first commit."""
+    first_at: dict[tuple[str, int], int] = {}
+    for i in range(len(msgs) - 1, -1, -1):                 # oldest to newest
+        for nm, v in re.findall(VERSIONED, msgs[i]):
+            first_at.setdefault((nm.lower(), int(v)), i)
+    tops: dict[str, tuple[int, int]] = {}
+    for (nm, v), i in first_at.items():
+        if v >= n and (nm not in tops or v > tops[nm][0]):
+            tops[nm] = (v, i)
+    if not tops:
+        return {"bad": False, "say": f"no fix has reached a v{n} in the recent record", "detail": {}}
+    nm, (v, i) = min(tops.items(), key=lambda kv: kv[1][1])   # (the most recently reached)
+    frame = next((j for j in range(len(msgs)) if re.search(FRAME, msgs[j], re.I)), None)
+    stepped = frame is not None and frame < i               # (newer than the version's first commit)
+    return {"bad": not stepped,
+            "say": (f"**{nm} is at v{v}** and no commit since has questioned the frame it lives in "
+                    "(the expert's map, the cause upstream, the assumption under it)."
+                    if not stepped else f"{nm} reached v{v}; a frame-questioning commit followed: "
+                                        f"\"{msgs[frame][:80]}\""),
+            "detail": {"name": nm, "version": v, "commit_index": i, "frame_commit": frame}}
+
+
+def _git_subjects(root: str, n: int = 60) -> list[str]:
+    try:
+        top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=root,
+                             capture_output=True, text=True).stdout.strip() or root
+        out = subprocess.run(["git", "log", f"-{n}", "--format=%s"], cwd=top,
+                             capture_output=True, text=True).stdout
+        return [x for x in out.splitlines() if x.strip()]
+    except Exception:
+        return []
+
+
+def same_fix_again(r: Record) -> dict:
+    """The third version of one fix with no step back since. Not a judgement of the fix: only that the
+    loop has turned three times on it without anyone asking whether it is the right kind of fix."""
+    d = _same_fix_again(_git_subjects(r.root))
+    return {"q": "Is this the third version of the same fix?", "bad": d["bad"],
+            "why": "2026-11-05, Janaan: --floor-front v1 -> v3, each measured and failed inside one frame; "
+                   "one sentence from the author (\"cloth longer than the person falls onto the floor\") replaced it",
+            "say": d["say"], "detail": d["detail"]}
+
+
+LAW = r"^##\s*(L-\d+)\s*[·:.-]\s*(.+?)$(.*?)(?=^##\s|\Z)"
+#: Unchecked when the line is empty or OPENS with a refusal: "**Checked by:** not yet. The held points are
+#: countable ..." is an honest admission, and an early version read it as a check because text followed.
+UNCHECKED = r"\*\*Checked by:\*\*[ \t]*(?:$|—|-(?:\s|$)|none\b|not yet\b|unchecked\b|tbd\b|nothing\b)"
+
+
+def _laws(text: str | None) -> dict:
+    if text is None:
+        return {"bad": True, "say": "**No LAWS.md.** The project states its process rules but not the laws "
+                                    "its work must obey.", "detail": {"laws": 0}}
+    laws = [(m.group(1), m.group(2).strip(), m.group(3)) for m in re.finditer(LAW, text, re.M | re.S)]
+    if not laws:
+        return {"bad": True, "say": "**LAWS.md states no law** (headings `## L-1 · ...`).", "detail": {"laws": 0}}
+    blind = [lid for lid, _, body in laws
+             if not re.search(r"\*\*Checked by:\*\*", body) or re.search(UNCHECKED, body, re.M | re.I)]
+    return {"bad": bool(blind),
+            "say": (f"**{len(blind)} of {len(laws)} laws say nothing checks them** ({', '.join(blind)}): "
+                    "a law nobody checks is a wish." if blind else f"{len(laws)} laws, each with its check."),
+            "detail": {"laws": len(laws), "unchecked": blind}}
+
+
+def no_laws(r: Record) -> dict:
+    """Laws, not steps: what the work must never do, each with what checks it."""
+    p = os.path.join(r.root, "LAWS.md")
+    try:
+        text = open(p, encoding="utf-8").read()
+    except OSError:
+        text = None
+    d = _laws(text)
+    return {"q": "Does the project state the laws its work must obey, each with its check?", "bad": d["bad"],
+            "why": "2026-11-05, Janaan: the photo-fit drew the hem and pinned it, breaking two laws nobody had "
+                   "written (simulate, don't draw; no cloth crosses cloth); three versions were spent inside them",
+            "say": d["say"], "detail": d["detail"]}
+
+
+CHECKS.extend([same_fix_again, no_laws])
+
+
 def run_all(r: Record) -> list[dict]:
     out = [c(r) for c in CHECKS]
     out.sort(key=lambda x: not x["bad"])

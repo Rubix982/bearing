@@ -130,7 +130,28 @@ def render(r: Record, since: str = "7.days") -> str:
     L.append("    intellectualism  say why, predict before the run, keep the reversals")
     L.append("")
 
+    L.append("6 · STEP BACK")
+    # (2026-11-05, Janaan: the author lives in a loop too, and in it takes time to think from other angles.
+    # A loop checks whether a step worked, never whether it was the right kind of step; this is the pause.
+    # It asks. It does not answer: that is the boundary in the README, and it holds here most of all.)
+    again = next((d for d in drift if d["q"].startswith("Is this the third version")), None)
+    laws = next((d for d in drift if d["q"].startswith("Does the project state the laws")), None)
+    if again and again["bad"]:
+        L.append(f"    ! {again['say'][:150]}")
+        L.append("      Before a next version: the questions below, out loud, first.")
+    if laws and laws["bad"]:
+        L.append(f"    ! {laws['say'][:150]}")
+    L.append("    the expert's map  how does the field that already solved the nearest problem")
+    L.append("                      do this, and does the work do it their way?")
+    L.append("    upstream          is the fix on the cause, or on a symptom downstream of it?")
+    L.append("                      (change the input and run again before reshaping the output)")
+    L.append("    the assumption    what is assumed that, if wrong, wastes all of this?")
+    L.append("    the laws          which law does the current work lean on, and what checks it?")
+    L.append("    the eye           what does the picture show that no number says?")
+    L.append("")
+
     L.append("-" * 72)
     L.append("Nothing above interprets a result. Section 1 is the only part that is")
-    L.append("yours; sections 2-4 are so you can trust that and stop reading; 5 is the push.")
+    L.append("yours; sections 2-4 are so you can trust that and stop reading; 5 is the push;")
+    L.append("6 is the pause the push needs.")
     return "\n".join(L)

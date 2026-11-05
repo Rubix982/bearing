@@ -138,6 +138,32 @@ LESSONS: list[Lesson] = [
                  "as the diagnosis\" — a confession of not looking — also scored as "
                  "evidence of looking.",
         cost="the check was silent on the one ticket it was built for"),
+    Lesson(
+        rule="A loop checks whether a step worked, never whether it was the right kind of step. "
+             "After two failed versions of one fix, question the frame before writing a third.",
+        incident="Janaan, 2026-11-05: --floor-front v1 -> v2 -> v3, each with written predictions, "
+                 "measured and honestly failed, all inside one frame (draw the hem better). The author's "
+                 "one sentence, 'when a cloth is longer than the person, it falls onto the floor', "
+                 "replaced the frame: the hem was being drawn and pinned, never simulated.",
+        cost="three photo-fit runs and an afternoon, against one sentence",
+        check="same_fix_again"),
+    Lesson(
+        rule="Fix the cause upstream, not its symptom downstream. When the result disagrees with the "
+             "target, change the input and run the process again; reshape the output last.",
+        incident="Janaan, 2026-11-05: the day's one gain that held on both designs and both seeds was "
+                 "--hem-craft, a change to the PATTERN (the hem's girth), draped again. The changes to "
+                 "the 3D shape after the drape (--floor-front v1-v3) made tiers, a shelf, and nothing.",
+        cost="the reshaping line's three versions; the pattern change cost one"),
+    Lesson(
+        rule="State the laws before the steps, each with what checks it. Process rules keep the work "
+             "honest; only laws keep it pointed.",
+        incident="Janaan, 2026-11-05: predictions, sheets and a ledger caught every false claim, and "
+                 "none could see that the pipeline broke two laws nobody had written: simulate, don't "
+                 "draw; no cloth crosses cloth (the trousers' relax ran with self-collision off, and "
+                 "crossed cloth held in place stood as stiff spikes). An engine tutorial that builds an "
+                 "FPS in a few episodes works because its author states those laws first.",
+        cost="the drawn-hem line, and a spike defect carried for weeks",
+        check="no_laws"),
 ]
 
 
