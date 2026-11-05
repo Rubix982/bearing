@@ -511,3 +511,13 @@ def test_moments_adapter_reads_flow_audit_findings(tmp_path):
     assert by["U-01"].done and not by["U-02"].done and by["U-01"].kind == "finding"
     qs = {q.id: q for q in r.questions}
     assert not qs["A1-Q1"].done and qs["A1-Q2"].done
+
+
+def test_named_and_left_both_ways():
+    from bearing.checks import _named_and_left
+    now = 1_000_000.0
+    assert _named_and_left((now - 5 * 3600, "hg running; kr next"), now)["bad"]
+    assert not _named_and_left((now - 1 * 3600, "hg running"), now)["bad"]          # under the stall line
+    assert not _named_and_left((now - 9 * 3600, "fix the fold measure"), now)["bad"]  # nothing named
+    assert not _named_and_left(None, now)["bad"]
+    assert _named_and_left((now - 4 * 3600, "hcf2 / hcfm2 rerunning"), now)["detail"]["named"]

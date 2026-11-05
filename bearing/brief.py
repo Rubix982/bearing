@@ -119,7 +119,18 @@ def render(r: Record, since: str = "7.days") -> str:
         L.append(f"\n    priced and still unrun: {priced['say'][:130]}")
     L.append("")
 
+    L.append("5 · KEEP GOING")
+    stall = next((d for d in drift if d["q"].startswith("Was a next step named")), None)
+    if stall and stall["detail"].get("named"):
+        L.append(f"    The record's own next step: \"{stall['detail'].get('message', '')[:100]}\"")
+        L.append("    If it is still inside the agreed direction, take it; do not wait to be asked.")
+    L.append("    skill            the slow, exact work: measure, then look, then believe")
+    L.append("    focus            one card open; the next branch is a line in threads.md")
+    L.append("    consistency      a brick a sitting, finished, committed, written down")
+    L.append("    intellectualism  say why, predict before the run, keep the reversals")
+    L.append("")
+
     L.append("-" * 72)
     L.append("Nothing above interprets a result. Section 1 is the only part that is")
-    L.append("yours; sections 2-4 are so you can trust that and stop reading.")
+    L.append("yours; sections 2-4 are so you can trust that and stop reading; 5 is the push.")
     return "\n".join(L)

@@ -549,6 +549,49 @@ CHECKS = [never_varied, inward_drift, claim_debt, summary_staleness,
           system_blamed_unread]
 
 
+
+#: A commit that names work still to come. Matched against the newest commit's message.
+NAMED_NEXT = r"\b(?:re)?running\b|\bnext\b|\bpending\b|\bto do\b|\bqueued\b|\bwill run\b"
+STALL_HOURS = 3.0
+
+
+def _named_and_left(last: tuple[float, str] | None, now: float, hours: float = STALL_HOURS) -> dict:
+    """The decision behind `named_and_left`, apart from git so it can be tested."""
+    if not last:
+        return {"bad": False, "say": "no commits", "detail": {}}
+    t, msg = last
+    age = (now - t) / 3600
+    named = re.search(NAMED_NEXT, msg, re.I)
+    bad = bool(named) and age >= hours
+    return {"bad": bad,
+            "say": (f"**The last commit named a next step {age:.0f} h ago and nothing has moved since:** "
+                    f"\"{msg[:90]}\"" if bad else
+                    (f"last commit {age:.1f} h ago" + (" (names a next step; under the stall line)" if named else ""))),
+            "detail": {"hours": round(age, 1), "named": bool(named), "message": msg[:200]}}
+
+
+def named_and_left(r: Record) -> dict:
+    """A next step written down and then not taken. Not a judgement of the step: only that it
+    was named, and the record has been still since."""
+    import time
+    try:
+        top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=r.root,
+                             capture_output=True, text=True).stdout.strip() or r.root
+        out = subprocess.run(["git", "log", "-1", "--format=%ct%x09%s"], cwd=top,
+                             capture_output=True, text=True).stdout.strip()
+        t, msg = out.split("\t", 1) if out else (None, None)
+        last = (float(t), msg) if t else None
+    except Exception:
+        last = None
+    d = _named_and_left(last, time.time())
+    return {"q": "Was a next step named and then left?", "bad": d["bad"],
+            "why": "2026-11-05: an agent wrapped up at 1 AM with the next step written down and waited; "
+                   "the author: \"we had a lot of time ... should have continued by yourself\"",
+            "say": d["say"], "detail": d["detail"]}
+
+
+CHECKS.append(named_and_left)
+
 def run_all(r: Record) -> list[dict]:
     out = [c(r) for c in CHECKS]
     out.sort(key=lambda x: not x["bad"])
