@@ -562,3 +562,13 @@ def test_laws_both_ways():
     yet = one + "## L-2 · Another\n**Checked by:** not yet. The held points are countable, but nothing fails a run.\n"
     assert _laws(yet)["detail"]["unchecked"] == ["L-2"]
     assert _laws(one + "## L-3 · A discipline\n**Checked by:** none (read before a stage is written).\n")["detail"]["unchecked"] == ["L-3"]
+
+
+def test_tree_renders_and_names_real_checks():
+    from bearing import tree
+    from bearing.checks import CHECKS
+    out = tree.render()
+    assert "the expert's map" in out and "hypothesis" in out
+    names = {c.__name__ for c in CHECKS}
+    for s in tree.STEPS:            # (a step that names a check must name one that exists)
+        assert s.check is None or s.check in names, s.check

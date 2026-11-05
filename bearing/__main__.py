@@ -36,6 +36,8 @@ def main(argv=None) -> int:
     ap.add_argument("--since", default="7.days")
     ap.add_argument("--lessons", action="store_true",
                     help="rules earned by being wrong, with their incidents")
+    ap.add_argument("--tree", action="store_true",
+                    help="the step tree: a way of working with an AI on a complex system")
     ap.add_argument("--record", nargs="+", metavar=("CHECK VERDICT", "NOTE"),
                     help="log what a check actually did: caught | false-positive | ignored")
     ap.add_argument("--track", action="store_true",
@@ -60,8 +62,13 @@ def main(argv=None) -> int:
         print(render())
         return 0
 
+    if a.tree:
+        from .tree import render as tree_render
+        print(tree_render())
+        return 0
+
     if not a.project:
-        ap.error('give a project path, or --sentinel / --lessons / --digest')
+        ap.error('give a project path, or --sentinel / --lessons / --tree / --digest')
     rec = load(a.project, a.adapter)
     if not rec.ok():
         print(f"bearing: found no record under {rec.root}\n"

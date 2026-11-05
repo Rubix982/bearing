@@ -148,6 +148,7 @@ def render(r: Record, since: str = "7.days") -> str:
     L.append("    the assumption    what is assumed that, if wrong, wastes all of this?")
     L.append("    the laws          which law does the current work lean on, and what checks it?")
     L.append("    the eye           what does the picture show that no number says?")
+    L.append("    (the whole step tree: python -m bearing --tree)")
     L.append("")
 
     L.append("-" * 72)

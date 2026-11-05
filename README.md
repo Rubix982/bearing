@@ -213,6 +213,42 @@ subjects at `--floor-front v3`, stays firing through *"stopped pending a section
 shape"* (a pause still measuring inside the frame), and goes quiet at the commit that records
 the author's reframe. A frame question is deliberately narrow; a pause is not a reframe.
 
+## The step tree
+
+```bash
+python -m bearing --tree
+```
+
+The checks measure drift; the tree is the shape of the work they measure drift *from*. It is
+not a check, and it never will be: the manifesto's warning that a tracking system for direction
+is itself the difficulty-trap applies to it in full. It is read, like the lessons.
+
+```
+0  the destination, as something you could see fail
+1  the expert's map         how is the nearest solved system built? its laws? where does it break?
+2  laws, each with a check                                              (no_laws)
+3  a crude whole first      every stage end to end, badly, before any stage well
+4  the loop                 predict → run → measure → LOOK
+   └─ pause when: a fix fails twice · patches pile up · the effect is under the noise ·
+                  the person's intuition disagrees with the numbers     (same_fix_again)
+5  the pause                re-ask step 1 for the sub-problem; move the fix upstream
+6  promote                  each lesson becomes a law or a check for the next project
+```
+
+It is built around three things the Janaan afternoon showed about an agent. **What it reaches
+for depends on the frame**: it knew how cloth software is built and that cloth falls, and
+nothing in "the hem's shape is wrong" called for either; step 1 asks, because asked outright
+it answers well and mid-task it rarely volunteers. **It makes locally coherent work fast**, and
+volume reads as progress: every record that afternoon was true and three versions of a fix were
+pointed the wrong way; step 4's pause asks. **The person's best lever is a question about the
+frame**, often from an intuition not yet arguable; the tree spends it at the pauses, not at
+every step.
+
+Each step says how much it rests on. Step 3 is a **hypothesis**: it is how an engine tutorial
+builds a game in a few episodes, and it is untested on research-shaped work, where the whole
+may wait on one hard part. The tree is measured the plain way: does the next project, started
+with it, need fewer of the author's steering corrections than this one did?
+
 ## Track record
 
 ```bash
