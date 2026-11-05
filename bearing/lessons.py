@@ -164,6 +164,17 @@ LESSONS: list[Lesson] = [
                  "FPS in a few episodes works because its author states those laws first.",
         cost="the drawn-hem line, and a spike defect carried for weeks",
         check="no_laws"),
+    Lesson(
+        rule="Measure what a tool's setting does with the smallest test that could show it doing the "
+             "opposite, before building on it. Read its own description; a name is not a meaning.",
+        incident="Janaan, 2026-11-05 and 06: two Blender cloth settings the pipeline leaned on for weeks did "
+                 "not do what the code assumed. The rest shape key is ignored (a half-size key left a square "
+                 "1.0 wide), so no 'rest shape' construction ever acted, and the photo's length reading with "
+                 "them. The self-collision vertex group EXCLUDES its points (Blender's own description: "
+                 "'triangles with all vertices in this group are not used'), so 'self-collision on the kalis' "
+                 "switched it off exactly there. Each was found by a 40-line test that took minutes.",
+        cost="every fold and crossing reading on the gathered drapes; several constructions' claimed effect",
+        check=None),
 ]
 
 
