@@ -74,6 +74,14 @@ Each one comes from a correction the person made. The `From:` line is the incide
   interaction, never the fields. *From:* a contractor page simplified into one question
   per row, rejected as not the sheet they know (2026-11-03).
 
+- **U-12 · Every new action is reachable from ⌘K, and every shortcut shows itself.** When a
+  feature adds an action (add several people, plan holidays, write the report), add a
+  command-menu entry in the same change, with the everyday words people would type for it
+  ("christmas" finds the holidays). Each page's shortcut is printed next to it in the
+  menu, and the key handler, the shortcut list and the menu read one shared table so they
+  can't drift. *From:* "have we added the shortcuts through ⌘K?" (2026-11-07). A week of
+  new features had added none, and five pages had no shortcut.
+
 ## The run
 
 ### 0 · Before the first screen (fresh project)
@@ -148,6 +156,6 @@ calm, clearly clickable, quiet where nothing needs attention.
 
 The plain way, as with bearing's tree. On the next project started with this skill, count
 the person's UI corrections that repeat a law already listed here. Lookahead earned all
-eleven laws one complaint at a time. If the next project gets the same complaints anyway,
+twelve laws one complaint at a time. If the next project gets the same complaints anyway,
 the laws aren't being applied, and that's worth knowing. If it gets new ones, add them
 here with their `From:` line.

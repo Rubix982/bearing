@@ -306,7 +306,7 @@ and carried to a finished, judged artifact? Every `BRAINSTORM.md` it writes ends
 instead of re-earning it. It comes from nine days of building Lookahead, a construction
 scheduling app, where every UI complaint came with a screenshot and named something
 checkable: a paragraph nobody reads, a button that didn't look like a button, a click
-that blanked the page. Eleven laws, each with its `From:` line, a per-page pass (look,
+that blanked the page. Twelve laws, each with its `From:` line, a per-page pass (look,
 list every sentence of 8+ words, check, change, verify, commit) and an order for working
 page by page alone. It's measured the plain way: on the next project, how many of the
 person's UI corrections repeat a law already listed?
