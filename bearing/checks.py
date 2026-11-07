@@ -688,6 +688,81 @@ def no_laws(r: Record) -> dict:
 
 CHECKS.extend([same_fix_again, no_laws])
 
+# ------------------------------------------------------------------ finding or suggestion
+# (2026-11-07) The author, mid-brainstorm: "But does a finding even matter? ... is it the kind of thing we
+# can actually prove and work on, or is it a mere suggestion that confounds us." Whether a finding MATTERS
+# is taste, and the README forbids bearing to answer it. Two things next to it are computable:
+#   did the finding ever reach the write-up, the one place the project tells someone outside what it found?
+#   does it say how sure it is?
+# The mirror of `claim_debt`: that one is a write-up citing work that isn't finished; this is finished work
+# the write-up never uses. Measured on edit-slice that day: 26 of 33 findings cited, and the 7 that were not
+# all dated 2026-10-03 to 10-16, the stretch its author had called "too deep into narrow cases".
+
+CONFIDENCE = r"Confidence:?\**\s*\**\s*(high|medium|low)\b"
+#: The person's own answer to the check, written in the finding: it stays out of the write-up on purpose.
+#: Without a way to say this, a housekeeping finding fires forever, and a check that can never be
+#: answered is one people learn to skim.
+LET_GO = r"\*\*(?:Not for the write-up|Let go|Internal only)\b"
+FINDING_GRACE_DAYS = 3
+
+
+def _age_days(it, today) -> int | None:
+    from datetime import date
+    m = re.search(r"\d{4}-\d{2}-\d{2}", it.created or "") or \
+        re.search(r"_Date:\s*(\d{4}-\d{2}-\d{2})", it.body)
+    if not m:
+        return None
+    d = m.group(1) if m.lastindex else m.group(0)
+    try:
+        return (today - date.fromisoformat(d)).days
+    except ValueError:
+        return None
+
+
+def _finding_or_suggestion(r: Record, today, grace: int = FINDING_GRACE_DAYS) -> dict:
+    q = "Which findings never reached the write-up, and how sure is each?"
+    why = ("2026-11-07: \"does a finding even matter? ... can we actually prove and work on it, or is it a "
+           "mere suggestion that confounds us\"")
+    cite = lambda i: re.compile(r"(?<![\w-])" + re.escape(i) + r"(?![\w-])")  # noqa: E731
+    if not r.claims_text:
+        return {"q": q, "bad": False, "why": why, "say": "no write-up configured", "detail": []}
+    # A record whose write-up cites no result by id speaks another dialect: every finding would read as
+    # unused. Abstain rather than libel it (sheets' synthetic decision ids, 43 of 43, on the first run).
+    if not any(cite(i.id).search(r.claims_text) for i in r.results):
+        return {"q": q, "bad": False, "why": why,
+                "say": "the write-up cites no result by id, so this record can't answer it", "detail": []}
+    rows = []
+    for f in r.results:
+        if f.kind == "decision" or cite(f.id).search(r.claims_text) or re.search(LET_GO, f.body, re.I):
+            continue
+        age = _age_days(f, today)
+        if age is not None and age < grace:
+            continue                                   # too new to owe the write-up anything yet
+        conf = (re.search(CONFIDENCE, f.body, re.I) or [0, ""])[1].lower() or "not stated"
+        rows.append({"id": f.id, "age_days": age, "confidence": conf, "title": f.title[:90]})
+    # the unsure first: "is it a suggestion?" is the sharper question, and the brief shows only three
+    rows.sort(key=lambda x: (x["confidence"] == "high", -(x["age_days"] or 0)))
+    unsure = [x["id"] for x in rows if x["confidence"] != "high"]
+    ages = [x["age_days"] for x in rows if x["age_days"] is not None]
+    if not rows:
+        say = "Every finding older than a few days is used by the write-up."
+    else:
+        say = (f"**{len(rows)} finding(s)** never reached the write-up"
+               + (f", the oldest {max(ages)} days" if ages else "") + ". "
+               + (f"{len(unsure)} don't say they're sure ({', '.join(unsure[:5])}): suggestions until tested."
+                  if unsure else "All say they're sure: measured, and not yet used."))
+    return {"q": q, "bad": bool(rows), "why": why, "say": say, "detail": rows, "soft": True}
+
+
+def finding_or_suggestion(r: Record) -> dict:
+    """A finding nothing outward ever used, and whether it even says how sure it is. Not a judgement of
+    whether it matters: only that the record hasn't said, and has been quiet about it for days."""
+    from datetime import date
+    return _finding_or_suggestion(r, date.today())
+
+
+CHECKS.append(finding_or_suggestion)
+
 
 def run_all(r: Record) -> list[dict]:
     out = [c(r) for c in CHECKS]

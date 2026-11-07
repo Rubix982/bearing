@@ -572,3 +572,67 @@ def test_tree_renders_and_names_real_checks():
     names = {c.__name__ for c in CHECKS}
     for s in tree.STEPS:            # (a step that names a check must name one that exists)
         assert s.check is None or s.check in names, s.check
+
+
+# ------------------------------------------------------------------ finding or suggestion (2026-11-07)
+
+def _finding(i, date="2026-10-01", confidence=None, kind="finding", title="t"):
+    body = f"_Date: {date}_\n\nsome text\n" + (f"\n**Confidence: {confidence}.**\n" if confidence else "")
+    return Item(id=i, title=title, body=body, status="", kind=kind)
+
+
+def test_finding_or_suggestion_fires_on_an_old_unused_finding():
+    from datetime import date
+    r = rec(results=[_finding("R-001", confidence="high"), _finding("R-002")],
+            claims="As [R-001] shows, the thing holds.")
+    d = checks._finding_or_suggestion(r, date(2026, 11, 7))
+    assert d["bad"]
+    assert [x["id"] for x in d["detail"]] == ["R-002"]
+    assert d["detail"][0]["confidence"] == "not stated"
+    assert "suggestions until tested" in d["say"]
+
+
+def test_finding_or_suggestion_quiet_once_the_write_up_uses_it():
+    from datetime import date
+    r = rec(results=[_finding("R-001"), _finding("R-002")],
+            claims="[R-001] and R-002 together.")
+    assert not checks._finding_or_suggestion(r, date(2026, 11, 7))["bad"]
+
+
+def test_finding_or_suggestion_gives_a_new_finding_time():
+    from datetime import date
+    r = rec(results=[_finding("R-001"), _finding("R-002", date="2026-11-06")],
+            claims="[R-001]")
+    assert not checks._finding_or_suggestion(r, date(2026, 11, 7))["bad"]
+
+
+def test_finding_or_suggestion_abstains_when_the_write_up_cites_nothing_by_id():
+    """sheets: 43 synthetic decision ids, none cited, because its README never cites by id."""
+    from datetime import date
+    r = rec(results=[_finding("M-00-D1"), _finding("M-00-D2")], claims="A plain README.")
+    d = checks._finding_or_suggestion(r, date(2026, 11, 7))
+    assert not d["bad"] and "can't answer" in d["say"]
+
+
+def test_finding_or_suggestion_ignores_decisions_and_prefix_ids():
+    from datetime import date
+    r = rec(results=[_finding("R-001"), _finding("E-009", kind="decision"), _finding("R-01")],
+            claims="[R-001] and R-010.")      # R-010 must not count as citing R-01
+    d = checks._finding_or_suggestion(r, date(2026, 11, 7))
+    assert [x["id"] for x in d["detail"]] == ["R-01"]
+
+
+def test_finding_or_suggestion_can_be_answered_by_letting_go():
+    from datetime import date
+    f = _finding("R-002")
+    f.body += "\n**Not for the write-up:** housekeeping, checked the citations resolve.\n"
+    r = rec(results=[_finding("R-001"), f], claims="[R-001]")
+    assert not checks._finding_or_suggestion(r, date(2026, 11, 7))["bad"]
+
+
+def test_finding_or_suggestion_lists_the_unsure_first():
+    from datetime import date
+    r = rec(results=[_finding("R-001"), _finding("R-002", confidence="high", date="2026-09-01"),
+                     _finding("R-003", confidence="low")], claims="[R-001]")
+    ids = [x["id"] for x in checks._finding_or_suggestion(r, date(2026, 11, 7))["detail"]]
+    assert ids == ["R-003", "R-002"]          # R-001 is cited; the low-confidence one leads

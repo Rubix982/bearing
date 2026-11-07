@@ -59,7 +59,14 @@ def needs_you(r: Record, drift: list[dict]) -> list[tuple[str, str]]:
             out.append(("an active question, left open",
                         f"{q.id} · {q.title[:88]}"))
     for d in drift:
-        if d["bad"]:
+        if d["bad"] and d["q"].startswith("Which findings never reached"):
+            # One decision per finding, not one line for the check: "use it, test it, or let it go" is
+            # a choice about a particular result, and only a person can make it.
+            for f in d["detail"][:3]:
+                age = f"{f['age_days']} d" if f["age_days"] is not None else "undated"
+                out.append((f"a finding never used · {age} · confidence {f['confidence']}",
+                            f"{f['id']} · {f['title'][:70]} → use it, test it, or let it go"))
+        elif d["bad"]:
             out.append(("the record disagrees with itself", f"{d['q']} — {d['say'][:120]}"))
     blocked = [w for w in r.work if "blocked" in w.status.lower()]
     for b in blocked:
@@ -141,6 +148,15 @@ def render(r: Record, since: str = "7.days") -> str:
         L.append("      Before a next version: the questions below, out loud, first.")
     if laws and laws["bad"]:
         L.append(f"    ! {laws['say'][:150]}")
+    unused = next((d for d in drift if d["q"].startswith("Which findings never reached")), None)
+    if unused and unused["bad"]:
+        L.append(f"    ! {unused['say'][:150]}")
+    L.append("    where we are      the one finding you would tell someone outside, in one plain")
+    L.append("                      sentence. Could it be observed to be false?")
+    L.append("    proof or hunch    for each finding since: what measured it, or is it a")
+    L.append("                      suggestion that only sounds like one?")
+    L.append("    so what           what would change, and for whom, if it is true? if nothing,")
+    L.append("                      let it go on purpose")
     L.append("    the expert's map  how does the field that already solved the nearest problem")
     L.append("                      do this, and does the work do it their way?")
     L.append("    upstream          is the fix on the cause, or on a symptom downstream of it?")
