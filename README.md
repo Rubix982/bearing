@@ -213,6 +213,34 @@ subjects at `--floor-front v3`, stays firing through *"stopped pending a section
 shape"* (a pause still measuring inside the frame), and goes quiet at the commit that records
 the author's reframe. A frame question is deliberately narrow; a pause is not a reframe.
 
+### Finding or suggestion
+
+The question, 2026-11-07: *"does a finding even matter? ... is it the kind of thing we can
+actually prove and work on, or is it a mere suggestion that confounds us?"* Whether a finding
+matters is taste, and the table above puts that on the side bearing never answers. Two things
+right next to it can be computed, though:
+
+| | the bad answer, computable |
+| --- | --- |
+| `finding_or_suggestion` | a finding older than three days that the write-up never cites, which is the one place a project tells someone outside what it found. Each is listed with whether it states its own confidence. One that doesn't is a suggestion until tested |
+
+**Measured on edit-slice the day it was written.** 26 of 33 findings are cited. The 7 that
+aren't all date from 2026-10-03 to 10-16, around the stretch its author described as *"dug
+ourselves too deep into narrow cases"*. 4 of the 7 don't state a confidence. sheets and Janaan
+cite nothing by id, so the check abstains there instead of flagging every finding: a check
+written in one project's dialect will libel every project that speaks another.
+
+**The timer is the sentinel.** No new loop. `--sentinel --interval 2h` already reruns every
+check, and an unanswered finding shows up as a standing row with its age (`9d`) and not as a
+fresh alarm each pass. The brief puts each unused finding in section 1, *use it, test it, or
+let it go*, and section 6 asks the three questions out loud: where we are, proof or hunch, so
+what.
+
+**It can be answered.** Write `**Not for the write-up:** why` in a finding and the check
+drops it. That line is the person's decision, made on purpose and written down. Without a way
+to answer it, a housekeeping finding would fire forever, and a check that can never be answered
+is one people learn to skim.
+
 ## The step tree
 
 ```bash
@@ -248,6 +276,40 @@ Each step says how much it rests on. Step 3 is a **hypothesis**: it is how an en
 builds a game in a few episodes, and it is untested on research-shaped work, where the whole
 may wait on one hard part. The tree is measured the plain way: does the next project, started
 with it, need fewer of the author's steering corrections than this one did?
+
+## The brainstorm skill
+
+```bash
+claude --plugin-dir ~/code/bearing      # or symlink skills/brainstorm into ~/.claude/skills/
+```
+
+`skills/brainstorm/SKILL.md` is a Claude Code skill, not a check. It stands at the one place
+the boundary above is under the most pressure: choosing what to work on. So it does the half
+of brainstorming that can be checked and leaves the other half alone. It widens the options,
+grounds them in the person's own record (with paths), and gives every idea the same shape:
+an observable failure, a baseline, and a claim that could come back wrong. **The person picks.**
+The agent may lean, labelled as a lean.
+
+It comes from one artifact. A list of forty project ideas, each with a catchy name and a
+stack, was written in a sitting on 2025-11-02 and never touched again. Not one was started.
+The list said what each thing would be called. It never said what you would see if it
+failed. Law B-1 is that sentence turned into a rule: **no name without a failure**.
+
+It is measured like the tree, the plain way: of the ideas it shortlists, how many get picked
+and carried to a finished, judged artifact? Every `BRAINSTORM.md` it writes ends with an
+`Outcome` line to fill in later.
+
+## The ui-iterate skill
+
+`skills/ui-iterate/SKILL.md` is the second skill. It answers what the person means by
+"keep improving the UI", so that a fresh project starts at the bar the last one reached
+instead of re-earning it. It comes from nine days of building Lookahead, a construction
+scheduling app, where every UI complaint came with a screenshot and named something
+checkable: a paragraph nobody reads, a button that didn't look like a button, a click
+that blanked the page. Eleven laws, each with its `From:` line, a per-page pass (look,
+list every sentence of 8+ words, check, change, verify, commit) and an order for working
+page by page alone. It's measured the plain way: on the next project, how many of the
+person's UI corrections repeat a law already listed?
 
 ## Track record
 
