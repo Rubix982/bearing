@@ -6,8 +6,8 @@ description: Iteratively improve an app's UI, page by page, toward a calmer and 
 # ui-iterate
 
 "Keep improving the UI" sounds like taste, and bearing does not claim taste. But most of
-what the person meant by it, across nine days of building Lookahead (a construction
-scheduling app, 2026-10-30 to 2026-11-07), turned out to be checkable. Every complaint came
+what the person meant by it, across ten days of building Lookahead (a construction
+scheduling app, 2026-10-30 to 2026-11-08), turned out to be checkable. Every complaint came
 with a screenshot, and every one named something you could point at: a paragraph nobody
 reads, a button that didn't look like a button, a click that blanked the page. This skill
 turns those complaints into checks, so the next project starts at the stage Lookahead
@@ -29,6 +29,7 @@ Each one comes from a correction the person made. The `From:` line is the incide
   that expresses intent" (2026-10-31), and again a week later, "the page has a way of
   writing so much text instead of showing the user what they can do" (2026-11-07). Listing
   every visible line of 8 or more words found 95 on one app; a pass got it to a handful.
+  This law has a floor, U-16: cut far enough and the screen stops saying what it is for.
 - **U-2 · Room, colour, one action.** Each item gets space around it, a coloured state
   and one primary action. Secondary actions go under a "More" menu instead of becoming
   more buttons. *From:* "everything is kind of stuffed together" and "feels dull to look
@@ -54,8 +55,10 @@ Each one comes from a correction the person made. The `From:` line is the incide
   page key that changed on every selection.
 - **U-7 · Styled everything.** No browser-default grey tooltip, native dropdown or alert
   box. One styled tooltip for the app, picking up every `title` attribute, with light and
-  dark versions. *From:* a native tooltip covering the next card (2026-11-07), and earlier
-  "custom dropdowns, never native ones".
+  dark versions. Every menu item lights up under the pointer, not only under the arrow
+  keys. Text cut short with … shows in full on hover, without anyone adding a title.
+  *From:* a native tooltip covering the next card (2026-11-07), "custom dropdowns, never
+  native ones", and "there is no selection background colour to see a hover" (2026-11-08).
 - **U-8 · Mark what waits on deployment, don't hide it or fake it.** A feature that needs
   hosting, email or IT shows a dashed "Post deploy" tag, with a hover hint saying what it
   will do. It stays out of the numbered steps of a flow. *From:* the invite flow, which
@@ -81,6 +84,56 @@ Each one comes from a correction the person made. The `From:` line is the incide
   menu, and the key handler, the shortcut list and the menu read one shared table so they
   can't drift. *From:* "have we added the shortcuts through ⌘K?" (2026-11-07). A week of
   new features had added none, and five pages had no shortcut.
+- **U-13 · A crowded page splits into sections, all in one style.** Past about three
+  independent sections, a page shows one section at a time from a list on the left, the
+  same list on every page (Lookahead copied its Settings page), with an icon, a colour and
+  a count per section, and a dropdown on a phone. The chosen section is in the address, so
+  a reload, a link or a notification lands on it. Don't keep a second tab style alive:
+  the one page left with horizontal tabs was called out within a day. *From:* "when we
+  have too many sections, split it up as tabs like we have done for Settings, for design
+  consistency" and "the P6 page is inconsistent as tabs are horizontal not vertical"
+  (2026-11-07/08). After the split, re-run the overflow check: the list took 220px and
+  pushed three tables off the page.
+- **U-14 · What you click stays under the pointer.** No click may move the control it
+  was made on. A label between arrows keeps the width of its longest value (all twelve
+  months), with equal-width digits. A chosen tab doesn't turn wider by turning bold.
+  Opening a row doesn't close one above it; where something above must change, scroll
+  by the difference. A panel opens below the thing clicked, never above it. *From:*
+  "when we switch from Nov to Oct, the arrow goes slightly to the left" (2026-11-07).
+  A script then clicked every toggle on every page and found the same fault in eight
+  more places, rows jumping by up to 1,000px.
+- **U-15 · Motion answers the action, in its direction, quickly.** Turning a month
+  slides the new one in from the side you moved toward, with the next and previous
+  months fetched ahead so it never waits. A form or detail that opens inside a page grows
+  to its height and fades in over about 180ms, so what's below slides rather than jumps.
+  Nothing moves on its own, and reduced-motion turns it all off. *From:* "smoother
+  transitions on the calendar … for ALL calendars", then "the forms that open are so
+  quick it looks abrupt; it should be smoother and faster" (2026-11-07/08).
+- **U-16 · One plain line per section: the floor under U-1.** Each section keeps one
+  sentence under its name saying what it is and what to do there, written for someone
+  outside the trade. Labels name the action and its urgency ("Ask the owner by Oct 31 ·
+  9 days overdue", "Fill in request"), not the trade's shorthand ("Request by · 7 days
+  ago"). *From:* "I don't know what I am being shown or being asked to do" (2026-11-08),
+  said of a page the app's expert user reads with ease. The expert can read shorthand;
+  the person paying for the work, a new hire, or a reviewer can't.
+- **U-17 · A row's form opens under the row.** Answering, editing or returning
+  something opens a full-width strip beneath the row: it names what it's for, has
+  labelled fields and a clear Save, and the table's columns don't change width. The row
+  itself keeps one action button; rarer actions go in the strip or under More. *From:*
+  "would customers like it if it expands like this?" (2026-11-08). The form had squeezed
+  into the buttons column and reshuffled every column, and its Save button was invisible
+  in dark mode.
+- **U-18 · An icon per page, from the work's own world, none shared.** Two pages with
+  one icon, or an icon that means something else (a download arrow for "requests"),
+  makes the sidebar harder to scan than words alone. Draw them on one grid and stroke,
+  then look at them at sidebar size: the first two hard hats read as a service bell.
+  *From:* "can we add more icons suited for the professional workspace?" (2026-11-08).
+- **U-19 · Draw the page before its data; never a blank wait.** A page shows its title
+  and placeholder shapes at once, using whatever is already known (the company names the
+  sidebar has), and fills in. A page that pauses is usually computing the same thing per
+  item: work out the shared part once. *From:* "the Company tab pauses, then loads,
+  while other pages load gradually" (2026-11-08). It rebuilt the project's history once
+  per company; doing it once took it from 297ms to 25ms with identical numbers.
 
 ## The run
 
@@ -111,6 +164,12 @@ the person approves, the pilot is the pattern and the remaining pages follow it.
 look       screenshot light, dark and phone width (390px), on real-looking data
            and on an empty project
 list       every visible text line of 8+ words (a script in the browser, not by eye)
+sweep      scripts, not eyes, for the faults people feel but can't name:
+           - click every toggle, tab and arrow; did the clicked control move? (U-14)
+           - any element sticking out past the page, and which one (phone and desktop)
+           - text cut short with no way to read the rest
+           - console errors
+           - time each page's data; anything over ~100ms gets looked at (U-19)
 check      each law above: which ones does this page fail?
 change     the smallest edit that passes them
 verify     the same screenshots again, horizontal scroll = 0 on phone,
@@ -131,7 +190,10 @@ in this order, and finish each pass across all pages before starting the next:
    approves first.
 2. **Fewer sentences** (U-1): rerun the 8-word list and cut.
 3. **Clickable or not** (U-3, U-7): buttons, chips, tooltips, dropdowns.
-4. **Smoothness** (U-6): click every control and watch for remounts.
+4. **Smoothness** (U-6, U-14, U-15): click every control and watch for remounts, for
+   controls that move, and for anything that appears or vanishes with no motion.
+5. **Can an outsider read it** (U-16): read each section's line as someone who has never
+   done the job.
 
 Say which page is next and keep going. Report back in plain words: what changed per page,
 what was left on purpose, and what's rough.
@@ -143,6 +205,15 @@ what was left on purpose, and what's rough.
   or tighten a law here, and audit the whole app for it, not just the page they showed.
 - **Don't touch what they didn't ask about** to make it "consistent". Ask, or list it as
   a next step.
+- **A layout change is re-checked everywhere, not just where it was made.** Splitting
+  pages into sections (U-13) quietly broke three tables elsewhere. Re-run the sweeps after
+  any change to widths, columns or containers.
+- **Commit only on a green run.** Make the commit depend on the tests passing in the
+  same command. On Lookahead, one commit went out with two flows failing because the
+  check and the commit were chained without a condition.
+- **When asked for an opinion, give one.** "Would customers like this?" deserves a
+  plain no with the reasons visible in the screenshot, then the fix, not a defence of
+  what was built.
 - **Anything outward-facing** (sending email, a real account, hosting, other people's
   data) is asked first, every time. The UI tags it (U-8). It doesn't do it.
 
@@ -156,6 +227,6 @@ calm, clearly clickable, quiet where nothing needs attention.
 
 The plain way, as with bearing's tree. On the next project started with this skill, count
 the person's UI corrections that repeat a law already listed here. Lookahead earned all
-twelve laws one complaint at a time. If the next project gets the same complaints anyway,
+nineteen laws one complaint at a time. If the next project gets the same complaints anyway,
 the laws aren't being applied, and that's worth knowing. If it gets new ones, add them
 here with their `From:` line.

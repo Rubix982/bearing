@@ -303,12 +303,15 @@ and carried to a finished, judged artifact? Every `BRAINSTORM.md` it writes ends
 
 `skills/ui-iterate/SKILL.md` is the second skill. It answers what the person means by
 "keep improving the UI", so that a fresh project starts at the bar the last one reached
-instead of re-earning it. It comes from nine days of building Lookahead, a construction
+instead of re-earning it. It comes from ten days of building Lookahead, a construction
 scheduling app, where every UI complaint came with a screenshot and named something
 checkable: a paragraph nobody reads, a button that didn't look like a button, a click
-that blanked the page. Twelve laws, each with its `From:` line, a per-page pass (look,
-list every sentence of 8+ words, check, change, verify, commit) and an order for working
-page by page alone. It's measured the plain way: on the next project, how many of the
+that blanked the page, an arrow that slid out from under the pointer. Nineteen laws, each
+with its `From:` line, a per-page pass (look, list every sentence of 8+ words, sweep with
+scripts for controls that move and things that overflow, check, change, verify, commit)
+and an order for working page by page alone. Two of the laws pull against each other on
+purpose: show, don't write (U-1), and keep one plain line per section so an outsider can
+tell what it's for (U-16). It's measured the plain way: on the next project, how many of the
 person's UI corrections repeat a law already listed?
 
 ## Track record

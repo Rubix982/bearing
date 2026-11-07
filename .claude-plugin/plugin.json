@@ -1,7 +1,7 @@
 {
   "name": "bearing",
   "version": "0.1.0",
-  "description": "Skills that ship with bearing. brainstorm: ideas grounded in the person's record, each with an observable failure, a baseline and a claim that could come back wrong; the person picks. ui-iterate: what 'keep improving the UI' means as checks a screenshot can fail (show don't write, room and one action, clickable looks clickable), and how to go page by page.",
+  "description": "Skills that ship with bearing. brainstorm: ideas grounded in the person's record, each with an observable failure, a baseline and a claim that could come back wrong; the person picks. ui-iterate: what 'keep improving the UI' means as checks a screenshot can fail (show don't write but say what each section is for, room and one action, clickable looks clickable, what you click stays put, motion that answers the action), and how to go page by page.",
   "author": {
     "name": "Saif Ul Islam"
   },
